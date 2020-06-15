@@ -1,9 +1,10 @@
 import os.path
 
-import cinema.test
 import mgba.log
 import pytest
 import yaml
+
+import cinema.test
 
 mgba.log.install_default(mgba.log.NullLogger())
 

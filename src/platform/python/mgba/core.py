@@ -7,8 +7,10 @@ from functools import wraps
 
 from cached_property import cached_property
 
-from . import audio, tile
-from ._pylib import ffi, lib  # pylint: disable=no-name-in-module
+from . import audio
+from . import tile
+from ._pylib import ffi
+from ._pylib import lib
 
 
 def find(path):

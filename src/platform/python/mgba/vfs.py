@@ -6,7 +6,8 @@
 # pylint: disable=invalid-name,unused-argument
 import os
 
-from ._pylib import ffi, lib  # pylint: disable=no-name-in-module
+from ._pylib import ffi
+from ._pylib import lib
 
 
 @ffi.def_extern()
