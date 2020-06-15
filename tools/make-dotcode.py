@@ -1,7 +1,8 @@
+import sys
+
 import numpy as np
 import PIL.Image
 import PIL.ImageChops
-import sys
 
 blocksize = 104
 pow = [0] * 256
@@ -9,8 +10,8 @@ rev = [0] * 256
 rev[0] = 0xFF
 x = 1
 for i in range(0xFF):
-    pow[i]=x
-    rev[x]=i
+    pow[i] = x
+    rev[x] = i
     x *= 2
     if x >= 0x100:
         x ^= 0x187
@@ -33,23 +34,26 @@ for i in range(16):
 
 print(*[hex(x) for x in gg])
 
+
 def interleave(data, header):
     data = data.reshape([-1, 48]).T
     new_data = np.zeros((64, data.shape[1]), dtype=data.dtype)
     for i, row in enumerate(data.T):
-        new_data[:,i] = rs(row)
+        new_data[:, i] = rs(row)
     data = new_data.reshape([-1])
-    new_data = np.zeros(data.shape[0] + (102 - data.shape[0] % 102), dtype=data.dtype)
+    new_data = np.zeros(data.shape[0] + (102 - data.shape[0] % 102),
+                        dtype=data.dtype)
     new_data[:data.shape[0]] = data
     new_data = new_data.reshape([-1, 102])
     data = new_data
     new_data = np.zeros((data.shape[0], 104), dtype=data.dtype)
-    new_data[:,2:] = data
+    new_data[:, 2:] = data
     for i in range(new_data.shape[0]):
         x = (i * 2) % len(header)
-        new_data[i,:2] = header[x:x + 2]
+        new_data[i, :2] = header[x:x + 2]
     data = new_data.reshape([-1])
     return data
+
 
 def rs(data):
     new_data = np.zeros(data.shape[0] + 16, dtype=data.dtype)
@@ -73,23 +77,27 @@ def rs(data):
     new_data = np.flipud(new_data)
     return new_data
 
+
 def bin2raw(data):
     if len(data) == 1344:
-        header = np.array([0x00, 0x02, 0x00, 0x01, 0x40, 0x10, 0x00, 0x1C], dtype=np.uint8)
+        header = np.array([0x00, 0x02, 0x00, 0x01, 0x40, 0x10, 0x00, 0x1C],
+                          dtype=np.uint8)
     else:
-        header = np.array([0x00, 0x03, 0x00, 0x19, 0x40, 0x10, 0x00, 0x2C], dtype=np.uint8)
+        header = np.array([0x00, 0x03, 0x00, 0x19, 0x40, 0x10, 0x00, 0x2C],
+                          dtype=np.uint8)
     header = rs(header)
     new_data = interleave(np.frombuffer(data, np.uint8), header)
     return new_data.tobytes()
 
-with open(sys.argv[1], 'rb') as f:
+
+with open(sys.argv[1], "rb") as f:
     data = f.read()
 size = len(data)
 
 if size in (1344, 2112):
     data = bin2raw(data)
     size = len(data)
-    with open('dotcode.raw', 'wb') as f:
+    with open("dotcode.raw", "wb") as f:
         f.write(data)
 
 blocks = size // blocksize
@@ -97,17 +105,76 @@ height = 36
 width = 35
 margin = 2
 
-dots = np.zeros((width * blocks + margin * 2 + 1, height + margin * 2), dtype=np.bool)
-anchor = np.array([[0, 1, 1, 1, 0],
-                   [1, 1, 1, 1, 1],
-                   [1, 1, 1, 1, 1],
-                   [1, 1, 1, 1, 1],
-                   [0, 1, 1, 1, 0]], dtype=np.bool)
-alignment = np.array([1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0], dtype=np.bool)
-nybbles = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 1], [0, 0, 0, 1, 0], [1, 0, 0, 1, 0],
-           [0, 0, 1, 0, 0], [0, 0, 1, 0, 1], [0, 0, 1, 1, 0], [1, 0, 1, 1, 0],
-           [0, 1, 0, 0, 0], [0, 1, 0, 0, 1], [0, 1, 0, 1, 0], [1, 0, 1, 0, 0],
-           [0, 1, 1, 0, 0], [0, 1, 1, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 0]]
+dots = np.zeros((width * blocks + margin * 2 + 1, height + margin * 2),
+                dtype=np.bool)
+anchor = np.array(
+    [
+        [0, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 0],
+    ],
+    dtype=np.bool,
+)
+alignment = np.array(
+    [
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+    ],
+    dtype=np.bool,
+)
+nybbles = [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1],
+    [0, 0, 0, 1, 0],
+    [1, 0, 0, 1, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 1],
+    [0, 0, 1, 1, 0],
+    [1, 0, 1, 1, 0],
+    [0, 1, 0, 0, 0],
+    [0, 1, 0, 0, 1],
+    [0, 1, 0, 1, 0],
+    [1, 0, 1, 0, 0],
+    [0, 1, 1, 0, 0],
+    [0, 1, 1, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0],
+]
 addr = [0x03FF]
 for i in range(1, 54):
     addr.append(addr[i - 1] ^ ((i & -i) * 0x769))
@@ -121,7 +188,8 @@ for i in range(1, 54):
 base = 1 if blocks == 18 else 25
 for i in range(blocks + 1):
     dots[i * width:i * width + 5, 0:5] = anchor
-    dots[i * width:i * width + 5, height + margin * 2 - 5:height + margin * 2] = anchor
+    dots[i * width:i * width + 5, height + margin * 2 - 5:height +
+         margin * 2] = anchor
     dots[i * width + margin, margin + 5] = 1
     a = addr[base + i]
     for j in range(16):
@@ -135,14 +203,17 @@ for i in range(blocks):
         block.extend(nybbles[byte & 0xF])
     j = 0
     for y in range(3):
-        dots[i * width + margin + 5:i * width + margin + 31, margin + 2 + y] = block[j:j + 26]
+        dots[i * width + margin + 5:i * width + margin + 31, margin + 2 +
+             y] = block[j:j + 26]
         j += 26
     for y in range(26):
-        dots[i * width + margin + 1:i * width + margin + 35, margin + 5 + y] = block[j:j + 34]
+        dots[i * width + margin + 1:i * width + margin + 35, margin + 5 +
+             y] = block[j:j + 34]
         j += 34
     for y in range(3):
-        dots[i * width + margin + 5:i * width + margin + 31, margin + 31 + y] = block[j:j + 26]
+        dots[i * width + margin + 5:i * width + margin + 31, margin + 31 +
+             y] = block[j:j + 26]
         j += 26
 im = PIL.Image.fromarray(dots.T)
 im = PIL.ImageChops.invert(im)
-im.save('dotcode.png')
+im.save("dotcode.png")

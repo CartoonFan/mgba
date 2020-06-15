@@ -3,7 +3,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from ._pylib import ffi, lib  # pylint: disable=no-name-in-module
+from ._pylib import ffi
+from ._pylib import lib
 
 
 class MemoryView(object):
@@ -16,7 +17,8 @@ class MemoryView(object):
         self._bus_write = getattr(self._core, "busWrite" + str(width * 8))
         self._raw_read = getattr(self._core, "rawRead" + str(width * 8))
         self._raw_write = getattr(self._core, "rawWrite" + str(width * 8))
-        self._mask = (1 << (width * 8)) - 1  # Used to force values to fit within range so that negative values work
+        # Used to force values to fit within range so that negative values work
+        self._mask = (1 << (width * 8)) - 1
         if sign in ["u", "unsigned"]:
             self._type = "uint{}_t".format(width * 8)
         elif sign in ["i", "s", "signed"]:
@@ -45,8 +47,15 @@ class MemoryView(object):
             start = address.start or 0
             stop = self._size - self._width if address.stop is None else address.stop
             step = address.step or self._width
-            return [int(ffi.cast(self._type, self._bus_read(self._core, self._base + a))) for a in range(start, stop, step)]
-        return int(ffi.cast(self._type, self._bus_read(self._core, self._base + address)))
+            return [
+                int(
+                    ffi.cast(self._type,
+                             self._bus_read(self._core, self._base + a)))
+                for a in range(start, stop, step)
+            ]
+        return int(
+            ffi.cast(self._type,
+                     self._bus_read(self._core, self._base + address)))
 
     def __setitem__(self, address, value):
         self._addr_check(address)
@@ -55,17 +64,23 @@ class MemoryView(object):
             stop = self._size - self._width if address.stop is None else address.stop
             step = address.step or self._width
             for addr in range(start, stop, step):
-                self._bus_write(self._core, self._base + addr, value[addr] & self._mask)
+                self._bus_write(self._core, self._base + addr,
+                                value[addr] & self._mask)
         else:
-            self._bus_write(self._core, self._base + address, value & self._mask)
+            self._bus_write(self._core, self._base + address,
+                            value & self._mask)
 
     def raw_read(self, address, segment=-1):
         self._addr_check(address)
-        return int(ffi.cast(self._type, self._raw_read(self._core, self._base + address, segment)))
+        return int(
+            ffi.cast(self._type,
+                     self._raw_read(self._core, self._base + address,
+                                    segment)))
 
     def raw_write(self, address, value, segment=-1):
         self._addr_check(address)
-        self._raw_write(self._core, self._base + address, segment, value & self._mask)
+        self._raw_write(self._core, self._base + address, segment,
+                        value & self._mask)
 
 
 class MemorySearchResult(object):
@@ -126,7 +141,12 @@ class Memory(object):
     def __len__(self):
         return self.size
 
-    def search(self, value, type=SEARCH_GUESS, flags=RW, limit=10000, old_results=[]):
+    def search(self,
+               value,
+               type=SEARCH_GUESS,
+               flags=RW,
+               limit=10000,
+               old_results=[]):
         results = ffi.new("struct mCoreMemorySearchResults*")
         lib.mCoreMemorySearchResultsInit(results, len(old_results))
         params = ffi.new("struct mCoreMemorySearchParams*")
@@ -148,7 +168,11 @@ class Memory(object):
             lib.mCoreMemorySearchRepeat(self._core, params, results)
         else:
             lib.mCoreMemorySearch(self._core, params, results, limit)
-        new_results = [MemorySearchResult(self, lib.mCoreMemorySearchResultsGetPointer(results, i)) for i in range(lib.mCoreMemorySearchResultsSize(results))]
+        new_results = [
+            MemorySearchResult(
+                self, lib.mCoreMemorySearchResultsGetPointer(results, i))
+            for i in range(lib.mCoreMemorySearchResultsSize(results))
+        ]
         lib.mCoreMemorySearchResultsDeinit(results)
         return new_results
 
