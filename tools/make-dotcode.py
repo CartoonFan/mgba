@@ -20,10 +20,7 @@ for i in range(16):
     gg[i] = 1
     for j in range(i + 1):
         j = i - j
-        if j == 0:
-            y = 0
-        else:
-            y = gg[j - 1]
+        y = 0 if j == 0 else gg[j - 1]
         x = gg[j]
         if x != 0:
             x = rev[x] + 0x78 + i
@@ -63,10 +60,7 @@ def rs(data):
         z = rev[new_data[i] ^ new_data[15]]
         for j in range(16):
             j = 15 - j
-            if j == 0:
-                x = 0
-            else:
-                x = new_data[j - 1]
+            x = 0 if j == 0 else new_data[j - 1]
             if z != 0xFF:
                 y = gg[j]
                 if y != 0xFF:

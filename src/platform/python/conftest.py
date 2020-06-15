@@ -27,9 +27,7 @@ def pytest_exception_interact(node, call, report):
             try:
                 os.makedirs(outdir)
             except OSError as e:
-                if e.errno == errno.EEXIST and os.path.isdir(outdir):
-                    pass
-                else:
+                if e.errno != errno.EEXIST or not os.path.isdir(outdir):
                     raise
             for i, expected, result, diff, diffNorm in zip(itertools.count(), vtest.baseline, vtest.frames, *zip(*vtest.diffs)):
                 result.save(os.path.join(outdir, RESULT % i))

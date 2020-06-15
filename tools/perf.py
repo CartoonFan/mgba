@@ -74,10 +74,7 @@ class PerfServer(object):
 
     def __init__(self, address, command=None):
         s = address.rsplit(':', 1)
-        if len(s) == 1:
-            self.address = (s[0], 7216)
-        else:
-            self.address = (s[0], s[1])
+        self.address = (s[0], 7216) if len(s) == 1 else (s[0], s[1])
         if command:
             self.command = shlex.split(command)
         self.iterations = self.ITERATIONS_PER_INSTANCE
@@ -135,10 +132,15 @@ class Suite(object):
         self.server = server
 
     def collect_tests(self):
-        roms = []
-        for f in os.listdir(self.cwd):
-            if f.endswith('.gba') or f.endswith('.zip') or f.endswith('.gbc') or f.endswith('.gb'):
-                roms.append(f)
+        roms = [
+            f
+            for f in os.listdir(self.cwd)
+            if f.endswith('.gba')
+            or f.endswith('.zip')
+            or f.endswith('.gbc')
+            or f.endswith('.gb')
+        ]
+
         roms.sort()
         for rom in roms:
             self.add_tests(rom)

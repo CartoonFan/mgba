@@ -17,9 +17,9 @@ class MemoryView(object):
         self._raw_read = getattr(self._core, "rawRead" + str(width * 8))
         self._raw_write = getattr(self._core, "rawWrite" + str(width * 8))
         self._mask = (1 << (width * 8)) - 1  # Used to force values to fit within range so that negative values work
-        if sign == "u" or sign == "unsigned":
+        if sign in ["u", "unsigned"]:
             self._type = "uint{}_t".format(width * 8)
-        elif sign == "i" or sign == "s" or sign == "signed":
+        elif sign in ["i", "s", "signed"]:
             self._type = "int{}_t".format(width * 8)
         else:
             raise ValueError("Invalid sign type: '{}'".format(sign))
