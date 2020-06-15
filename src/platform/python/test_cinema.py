@@ -1,7 +1,8 @@
-import pytest
+import os.path
+
 import cinema.test
 import mgba.log
-import os.path
+import pytest
 import yaml
 
 mgba.log.install_default(mgba.log.NullLogger())

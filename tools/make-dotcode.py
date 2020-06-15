@@ -1,7 +1,8 @@
+import sys
+
 import numpy as np
 import PIL.Image
 import PIL.ImageChops
-import sys
 
 blocksize = 104
 pow = [0] * 256
