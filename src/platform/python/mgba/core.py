@@ -25,14 +25,14 @@ def find_vf(vfile):
 
 def load_path(path):
     core = find(path)
-    if not core or not core.load_file(path):
+    if not (core and core.load_file(path)):
         return None
     return core
 
 
 def load_vf(vfile):
     core = find_vf(vfile)
-    if not core or not core.load_rom(vfile):
+    if not (core and core.load_rom(vfile)):
         return None
     return core
 

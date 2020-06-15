@@ -82,8 +82,7 @@ def _vfpSync(vf, buffer, size):
 
 def open(f):  # pylint: disable=redefined-builtin
     handle = ffi.new_handle(f)
-    vf = VFile(lib.VFileFromPython(handle), _no_gc=(f, handle))
-    return vf
+    return VFile(lib.VFileFromPython(handle), _no_gc=(f, handle))
 
 
 def open_path(path, mode="r"):

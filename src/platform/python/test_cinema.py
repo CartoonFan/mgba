@@ -17,17 +17,19 @@ def flatten(d):
     return l
 
 def pytest_generate_tests(metafunc):
-    if 'vtest' in metafunc.fixturenames:
-        tests = cinema.test.gather_tests(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'cinema'))
-        testList = flatten(tests)
-        params = []
-        for test in testList:
-            marks = []
-            xfail = test.settings.get('fail')
-            if xfail:
-                marks = pytest.mark.xfail(reason=xfail if isinstance(xfail, str) else None)
-            params.append(pytest.param(test, id=test.name, marks=marks))
-        metafunc.parametrize('vtest', params, indirect=True)
+    if 'vtest' not in metafunc.fixturenames:
+        return
+
+    tests = cinema.test.gather_tests(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'cinema'))
+    testList = flatten(tests)
+    params = []
+    for test in testList:
+        marks = []
+        xfail = test.settings.get('fail')
+        if xfail:
+            marks = pytest.mark.xfail(reason=xfail if isinstance(xfail, str) else None)
+        params.append(pytest.param(test, id=test.name, marks=marks))
+    metafunc.parametrize('vtest', params, indirect=True)
 
 @pytest.fixture
 def vtest(request):
