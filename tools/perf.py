@@ -37,11 +37,15 @@ class PerfTest(object):
         args.append(self.rom)
         env = {}
         if "LD_LIBRARY_PATH" in os.environ:
-            env["LD_LIBRARY_PATH"] = os.path.abspath(os.environ["LD_LIBRARY_PATH"])
-            env["DYLD_LIBRARY_PATH"] = env["LD_LIBRARY_PATH"]  # Fake it on OS X
-        proc = subprocess.Popen(
-            args, stdout=subprocess.PIPE, cwd=cwd, universal_newlines=True, env=env
-        )
+            env["LD_LIBRARY_PATH"] = os.path.abspath(
+                os.environ["LD_LIBRARY_PATH"])
+            env["DYLD_LIBRARY_PATH"] = env[
+                "LD_LIBRARY_PATH"]  # Fake it on OS X
+        proc = subprocess.Popen(args,
+                                stdout=subprocess.PIPE,
+                                cwd=cwd,
+                                universal_newlines=True,
+                                env=env)
         try:
             self.wait(proc)
             proc.wait()
@@ -60,8 +64,7 @@ class WallClockTest(PerfTest):
         super(WallClockTest, self).__init__(rom, renderer)
         self.duration = duration
         self.name = "Wall-Clock Test ({} seconds, {} renderer): {}".format(
-            duration, renderer, rom
-        )
+            duration, renderer, rom)
 
     def wait(self, proc):
         time.sleep(self.duration)
@@ -73,8 +76,7 @@ class GameClockTest(PerfTest):
         super(GameClockTest, self).__init__(rom, renderer)
         self.frames = frames
         self.name = "Game-Clock Test ({} frames, {} renderer): {}".format(
-            frames, renderer, rom
-        )
+            frames, renderer, rom)
 
     def get_args(self):
         return ["-F", str(self.frames)]
@@ -145,12 +147,8 @@ class Suite(object):
 
     def collect_tests(self):
         roms = [
-            f
-            for f in os.listdir(self.cwd)
-            if f.endswith(".gba")
-            or f.endswith(".zip")
-            or f.endswith(".gbc")
-            or f.endswith(".gb")
+            f for f in os.listdir(self.cwd) if f.endswith(".gba")
+            or f.endswith(".zip") or f.endswith(".gbc") or f.endswith(".gb")
         ]
 
         roms.sort()
@@ -159,9 +157,11 @@ class Suite(object):
 
     def add_tests(self, rom):
         if self.wall:
-            self.tests.append(WallClockTest(rom, self.wall, renderer=self.renderer))
+            self.tests.append(
+                WallClockTest(rom, self.wall, renderer=self.renderer))
         if self.game:
-            self.tests.append(GameClockTest(rom, self.game, renderer=self.renderer))
+            self.tests.append(
+                GameClockTest(rom, self.game, renderer=self.renderer))
 
     def run(self):
         results = []
@@ -216,10 +216,14 @@ if __name__ == "__main__":
         const=True,
         help="threaded video rendering",
     )
-    parser.add_argument("-s", "--server", metavar="ADDRESS", help="run on server")
-    parser.add_argument(
-        "-S", "--server-command", metavar="COMMAND", help="command to launch server"
-    )
+    parser.add_argument("-s",
+                        "--server",
+                        metavar="ADDRESS",
+                        help="run on server")
+    parser.add_argument("-S",
+                        "--server-command",
+                        metavar="COMMAND",
+                        help="command to launch server")
     parser.add_argument("-o", "--out", metavar="FILE", help="output file path")
     parser.add_argument("directory", help="directory containing ROM files")
     args = parser.parse_args()
@@ -229,9 +233,10 @@ if __name__ == "__main__":
         renderer = None
     elif args.threaded_renderer:
         renderer = "threaded-software"
-    s = Suite(
-        args.directory, wall=args.wall_time, game=args.game_frames, renderer=renderer
-    )
+    s = Suite(args.directory,
+              wall=args.wall_time,
+              game=args.game_frames,
+              renderer=renderer)
     if args.server:
         if args.server_command:
             server = PerfServer(args.server, args.server_command)

@@ -48,12 +48,14 @@ class MemoryView(object):
             stop = self._size - self._width if address.stop is None else address.stop
             step = address.step or self._width
             return [
-                int(ffi.cast(self._type, self._bus_read(self._core, self._base + a)))
+                int(
+                    ffi.cast(self._type,
+                             self._bus_read(self._core, self._base + a)))
                 for a in range(start, stop, step)
             ]
         return int(
-            ffi.cast(self._type, self._bus_read(self._core, self._base + address))
-        )
+            ffi.cast(self._type,
+                     self._bus_read(self._core, self._base + address)))
 
     def __setitem__(self, address, value):
         self._addr_check(address)
@@ -62,21 +64,23 @@ class MemoryView(object):
             stop = self._size - self._width if address.stop is None else address.stop
             step = address.step or self._width
             for addr in range(start, stop, step):
-                self._bus_write(self._core, self._base + addr, value[addr] & self._mask)
+                self._bus_write(self._core, self._base + addr,
+                                value[addr] & self._mask)
         else:
-            self._bus_write(self._core, self._base + address, value & self._mask)
+            self._bus_write(self._core, self._base + address,
+                            value & self._mask)
 
     def raw_read(self, address, segment=-1):
         self._addr_check(address)
         return int(
-            ffi.cast(
-                self._type, self._raw_read(self._core, self._base + address, segment)
-            )
-        )
+            ffi.cast(self._type,
+                     self._raw_read(self._core, self._base + address,
+                                    segment)))
 
     def raw_write(self, address, value, segment=-1):
         self._addr_check(address)
-        self._raw_write(self._core, self._base + address, segment, value & self._mask)
+        self._raw_write(self._core, self._base + address, segment,
+                        value & self._mask)
 
 
 class MemorySearchResult(object):
@@ -137,7 +141,12 @@ class Memory(object):
     def __len__(self):
         return self.size
 
-    def search(self, value, type=SEARCH_GUESS, flags=RW, limit=10000, old_results=[]):
+    def search(self,
+               value,
+               type=SEARCH_GUESS,
+               flags=RW,
+               limit=10000,
+               old_results=[]):
         results = ffi.new("struct mCoreMemorySearchResults*")
         lib.mCoreMemorySearchResultsInit(results, len(old_results))
         params = ffi.new("struct mCoreMemorySearchParams*")
@@ -160,7 +169,8 @@ class Memory(object):
         else:
             lib.mCoreMemorySearch(self._core, params, results, limit)
         new_results = [
-            MemorySearchResult(self, lib.mCoreMemorySearchResultsGetPointer(results, i))
+            MemorySearchResult(
+                self, lib.mCoreMemorySearchResultsGetPointer(results, i))
             for i in range(lib.mCoreMemorySearchResultsSize(results))
         ]
         lib.mCoreMemorySearchResultsDeinit(results)

@@ -151,7 +151,8 @@ class Core(object):
         tiles = []
         native_tiles = ffi.addressof(self.graphics_cache.cache.tiles)
         for i in range(lib.mTileCacheSetSize(native_tiles)):
-            tiles.append(tile.TileView(lib.mTileCacheSetGetPointer(native_tiles, i)))
+            tiles.append(
+                tile.TileView(lib.mTileCacheSetGetPointer(native_tiles, i)))
         return tiles
 
     @cached_property
@@ -159,7 +160,8 @@ class Core(object):
         maps = []
         native_maps = ffi.addressof(self.graphics_cache.cache.maps)
         for i in range(lib.mMapCacheSetSize(native_maps)):
-            maps.append(tile.MapView(lib.mMapCacheSetGetPointer(native_maps, i)))
+            maps.append(
+                tile.MapView(lib.mMapCacheSetGetPointer(native_maps, i)))
         return maps
 
     @classmethod
@@ -173,11 +175,13 @@ class Core(object):
 
     @classmethod
     def _detect(cls, core):
-        if hasattr(cls, "PLATFORM_GBA") and core.platform(core) == cls.PLATFORM_GBA:
+        if hasattr(cls,
+                   "PLATFORM_GBA") and core.platform(core) == cls.PLATFORM_GBA:
             from .gba import GBA
 
             return GBA(core)
-        if hasattr(cls, "PLATFORM_GB") and core.platform(core) == cls.PLATFORM_GB:
+        if hasattr(cls,
+                   "PLATFORM_GB") and core.platform(core) == cls.PLATFORM_GB:
             from .gb import GB
 
             return GB(core)
@@ -260,13 +264,13 @@ class Core(object):
 
     @protected
     def get_audio_channels(self):
-        return audio.StereoBuffer(self.get_audio_channel(0), self.get_audio_channel(1))
+        return audio.StereoBuffer(self.get_audio_channel(0),
+                                  self.get_audio_channel(1))
 
     @protected
     def get_audio_channel(self, channel):
-        return audio.Buffer(
-            self._core.getAudioChannel(self._core, channel), self.frequency
-        )
+        return audio.Buffer(self._core.getAudioChannel(self._core, channel),
+                            self.frequency)
 
     @protected
     def reset(self):
@@ -399,7 +403,8 @@ class Config(object):
             self._port = ffi.NULL
             if port:
                 self._port = ffi.new("char[]", port.encode("UTF-8"))
-            native = ffi.gc(ffi.new("struct mCoreConfig*"), lib.mCoreConfigDeinit)
+            native = ffi.gc(ffi.new("struct mCoreConfig*"),
+                            lib.mCoreConfigDeinit)
             lib.mCoreConfigInit(native, self._port)
         self._native = native
         for key, value in defaults.items():
@@ -408,13 +413,13 @@ class Config(object):
             lib.mCoreConfigSetDefaultValue(
                 self._native,
                 ffi.new("char[]", key.encode("UTF-8")),
-                ffi.new("char[]", str(value).encode("UTF-8")),
+                ffi.new("char[]",
+                        str(value).encode("UTF-8")),
             )
 
     def __getitem__(self, key):
         string = lib.mCoreConfigGetValue(
-            self._native, ffi.new("char[]", key.encode("UTF-8"))
-        )
+            self._native, ffi.new("char[]", key.encode("UTF-8")))
         if not string:
             return None
         return ffi.string(string)
@@ -425,5 +430,6 @@ class Config(object):
         lib.mCoreConfigSetValue(
             self._native,
             ffi.new("char[]", key.encode("UTF-8")),
-            ffi.new("char[]", str(value).encode("UTF-8")),
+            ffi.new("char[]",
+                    str(value).encode("UTF-8")),
         )

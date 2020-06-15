@@ -25,15 +25,15 @@ def pytest_generate_tests(metafunc):
         return
 
     tests = cinema.test.gather_tests(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..", "cinema")
-    )
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "cinema"))
     testList = flatten(tests)
     params = []
     for test in testList:
         marks = []
         xfail = test.settings.get("fail")
         if xfail:
-            marks = pytest.mark.xfail(reason=xfail if isinstance(xfail, str) else None)
+            marks = pytest.mark.xfail(
+                reason=xfail if isinstance(xfail, str) else None)
         params.append(pytest.param(test, id=test.name, marks=marks))
     metafunc.parametrize("vtest", params, indirect=True)
 
@@ -52,7 +52,8 @@ def test_video(vtest, pytestconfig):
             vtest.test()
         except IOError:
             raise
-        if pytestconfig.getoption("--mark-succeeding") and "fail" in vtest.settings:
+        if pytestconfig.getoption(
+                "--mark-succeeding") and "fail" in vtest.settings:
             # TODO: This can fail if an entire directory is marked as failing
             settings = {}
             try:

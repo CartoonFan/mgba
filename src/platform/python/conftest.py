@@ -12,15 +12,16 @@ def pytest_addoption(parser):
         action="store_true",
         help="output a new baseline instead of testing",
     )
-    parser.addoption(
-        "--mark-failing", action="store_true", help="mark all failing tests as failing"
-    )
+    parser.addoption("--mark-failing",
+                     action="store_true",
+                     help="mark all failing tests as failing")
     parser.addoption(
         "--mark-succeeding",
         action="store_true",
         help="unmark all succeeding tests marked as failing",
     )
-    parser.addoption("--output-diff", help="output diffs for failed tests to directory")
+    parser.addoption("--output-diff",
+                     help="output diffs for failed tests to directory")
 
 
 EXPECTED = "expected_%04u.png"
@@ -43,8 +44,8 @@ def pytest_exception_interact(node, call, report):
                 if e.errno != errno.EEXIST or not os.path.isdir(outdir):
                     raise
             for i, expected, result, diff, diffNorm in zip(
-                itertools.count(), vtest.baseline, vtest.frames, *zip(*vtest.diffs)
-            ):
+                    itertools.count(), vtest.baseline, vtest.frames,
+                    *zip(*vtest.diffs)):
                 result.save(os.path.join(outdir, RESULT % i))
                 if expected:
                     expected.save(os.path.join(outdir, EXPECTED % i))
