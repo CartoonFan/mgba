@@ -16,7 +16,8 @@ class MemoryView(object):
         self._bus_write = getattr(self._core, "busWrite" + str(width * 8))
         self._raw_read = getattr(self._core, "rawRead" + str(width * 8))
         self._raw_write = getattr(self._core, "rawWrite" + str(width * 8))
-        self._mask = (1 << (width * 8)) - 1  # Used to force values to fit within range so that negative values work
+        # Used to force values to fit within range so that negative values work
+        self._mask = (1 << (width * 8)) - 1
         if sign in ["u", "unsigned"]:
             self._type = "uint{}_t".format(width * 8)
         elif sign in ["i", "s", "signed"]:
@@ -55,9 +56,11 @@ class MemoryView(object):
             stop = self._size - self._width if address.stop is None else address.stop
             step = address.step or self._width
             for addr in range(start, stop, step):
-                self._bus_write(self._core, self._base + addr, value[addr] & self._mask)
+                self._bus_write(self._core, self._base + addr,
+                                value[addr] & self._mask)
         else:
-            self._bus_write(self._core, self._base + address, value & self._mask)
+            self._bus_write(self._core, self._base +
+                            address, value & self._mask)
 
     def raw_read(self, address, segment=-1):
         self._addr_check(address)
@@ -65,7 +68,8 @@ class MemoryView(object):
 
     def raw_write(self, address, value, segment=-1):
         self._addr_check(address)
-        self._raw_write(self._core, self._base + address, segment, value & self._mask)
+        self._raw_write(self._core, self._base + address,
+                        segment, value & self._mask)
 
 
 class MemorySearchResult(object):
@@ -148,7 +152,8 @@ class Memory(object):
             lib.mCoreMemorySearchRepeat(self._core, params, results)
         else:
             lib.mCoreMemorySearch(self._core, params, results, limit)
-        new_results = [MemorySearchResult(self, lib.mCoreMemorySearchResultsGetPointer(results, i)) for i in range(lib.mCoreMemorySearchResultsSize(results))]
+        new_results = [MemorySearchResult(self, lib.mCoreMemorySearchResultsGetPointer(
+            results, i)) for i in range(lib.mCoreMemorySearchResultsSize(results))]
         lib.mCoreMemorySearchResultsDeinit(results)
         return new_results
 

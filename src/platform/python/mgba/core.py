@@ -145,7 +145,8 @@ class Core(object):
         tiles = []
         native_tiles = ffi.addressof(self.graphics_cache.cache.tiles)
         for i in range(lib.mTileCacheSetSize(native_tiles)):
-            tiles.append(tile.TileView(lib.mTileCacheSetGetPointer(native_tiles, i)))
+            tiles.append(tile.TileView(
+                lib.mTileCacheSetGetPointer(native_tiles, i)))
         return tiles
 
     @cached_property
@@ -153,7 +154,8 @@ class Core(object):
         maps = []
         native_maps = ffi.addressof(self.graphics_cache.cache.maps)
         for i in range(lib.mMapCacheSetSize(native_maps)):
-            maps.append(tile.MapView(lib.mMapCacheSetGetPointer(native_maps, i)))
+            maps.append(tile.MapView(
+                lib.mMapCacheSetGetPointer(native_maps, i)))
         return maps
 
     @classmethod
@@ -252,7 +254,7 @@ class Core(object):
 
     @protected
     def get_audio_channels(self):
-        return audio.StereoBuffer(self.get_audio_channel(0), self.get_audio_channel(1));
+        return audio.StereoBuffer(self.get_audio_channel(0), self.get_audio_channel(1))
 
     @protected
     def get_audio_channel(self, channel):
@@ -389,16 +391,19 @@ class Config(object):
             self._port = ffi.NULL
             if port:
                 self._port = ffi.new("char[]", port.encode("UTF-8"))
-            native = ffi.gc(ffi.new("struct mCoreConfig*"), lib.mCoreConfigDeinit)
+            native = ffi.gc(ffi.new("struct mCoreConfig*"),
+                            lib.mCoreConfigDeinit)
             lib.mCoreConfigInit(native, self._port)
         self._native = native
         for key, value in defaults.items():
             if isinstance(value, bool):
                 value = int(value)
-            lib.mCoreConfigSetDefaultValue(self._native, ffi.new("char[]", key.encode("UTF-8")), ffi.new("char[]", str(value).encode("UTF-8")))
+            lib.mCoreConfigSetDefaultValue(self._native, ffi.new(
+                "char[]", key.encode("UTF-8")), ffi.new("char[]", str(value).encode("UTF-8")))
 
     def __getitem__(self, key):
-        string = lib.mCoreConfigGetValue(self._native, ffi.new("char[]", key.encode("UTF-8")))
+        string = lib.mCoreConfigGetValue(
+            self._native, ffi.new("char[]", key.encode("UTF-8")))
         if not string:
             return None
         return ffi.string(string)
@@ -406,4 +411,5 @@ class Config(object):
     def __setitem__(self, key, value):
         if isinstance(value, bool):
             value = int(value)
-        lib.mCoreConfigSetValue(self._native, ffi.new("char[]", key.encode("UTF-8")), ffi.new("char[]", str(value).encode("UTF-8")))
+        lib.mCoreConfigSetValue(self._native, ffi.new("char[]", key.encode(
+            "UTF-8")), ffi.new("char[]", str(value).encode("UTF-8")))

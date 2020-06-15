@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 
+
 class PerfTest(object):
     EXECUTABLE = 'mgba-perf'
 
@@ -35,9 +36,11 @@ class PerfTest(object):
         args.append(self.rom)
         env = {}
         if 'LD_LIBRARY_PATH' in os.environ:
-            env['LD_LIBRARY_PATH'] = os.path.abspath(os.environ['LD_LIBRARY_PATH'])
-            env['DYLD_LIBRARY_PATH'] = env['LD_LIBRARY_PATH'] # Fake it on OS X
-        proc = subprocess.Popen(args, stdout=subprocess.PIPE, cwd=cwd, universal_newlines=True, env=env)
+            env['LD_LIBRARY_PATH'] = os.path.abspath(
+                os.environ['LD_LIBRARY_PATH'])
+            env['DYLD_LIBRARY_PATH'] = env['LD_LIBRARY_PATH']  # Fake it on OS X
+        proc = subprocess.Popen(
+            args, stdout=subprocess.PIPE, cwd=cwd, universal_newlines=True, env=env)
         try:
             self.wait(proc)
             proc.wait()
@@ -50,24 +53,29 @@ class PerfTest(object):
         reader = csv.DictReader(proc.stdout)
         self.results = next(reader)
 
+
 class WallClockTest(PerfTest):
     def __init__(self, rom, duration, renderer='software'):
         super(WallClockTest, self).__init__(rom, renderer)
         self.duration = duration
-        self.name = 'Wall-Clock Test ({} seconds, {} renderer): {}'.format(duration, renderer, rom)
+        self.name = 'Wall-Clock Test ({} seconds, {} renderer): {}'.format(
+            duration, renderer, rom)
 
     def wait(self, proc):
         time.sleep(self.duration)
         proc.send_signal(signal.SIGINT)
 
+
 class GameClockTest(PerfTest):
     def __init__(self, rom, frames, renderer='software'):
         super(GameClockTest, self).__init__(rom, renderer)
         self.frames = frames
-        self.name = 'Game-Clock Test ({} frames, {} renderer): {}'.format(frames, renderer, rom)
+        self.name = 'Game-Clock Test ({} frames, {} renderer): {}'.format(
+            frames, renderer, rom)
 
     def get_args(self):
         return ['-F', str(self.frames)]
+
 
 class PerfServer(object):
     ITERATIONS_PER_INSTANCE = 50
@@ -113,11 +121,12 @@ class PerfServer(object):
             self.iterations = self.ITERATIONS_PER_INSTANCE
 
     def finish(self):
-        self.socket.send(b"\n");
+        self.socket.send(b"\n")
         self.reader = None
         self.socket.close()
         time.sleep(5)
         self.socket = None
+
 
 class Suite(object):
     def __init__(self, cwd, wall=None, game=None, renderer='software'):
@@ -147,9 +156,11 @@ class Suite(object):
 
     def add_tests(self, rom):
         if self.wall:
-            self.tests.append(WallClockTest(rom, self.wall, renderer=self.renderer))
+            self.tests.append(WallClockTest(
+                rom, self.wall, renderer=self.renderer))
         if self.game:
-            self.tests.append(GameClockTest(rom, self.game, renderer=self.renderer))
+            self.tests.append(GameClockTest(
+                rom, self.game, renderer=self.renderer))
 
     def run(self):
         results = []
@@ -171,14 +182,21 @@ class Suite(object):
             results.extend(self.server.results)
         return results
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-w', '--wall-time', type=float, default=0, metavar='TIME', help='wall-clock time')
-    parser.add_argument('-g', '--game-frames', type=int, default=0, metavar='FRAMES', help='game-clock frames')
-    parser.add_argument('-N', '--disable-renderer', action='store_const', const=True, help='disable video rendering')
-    parser.add_argument('-T', '--threaded-renderer', action='store_const', const=True, help='threaded video rendering')
-    parser.add_argument('-s', '--server', metavar='ADDRESS', help='run on server')
-    parser.add_argument('-S', '--server-command', metavar='COMMAND', help='command to launch server')
+    parser.add_argument('-w', '--wall-time', type=float,
+                        default=0, metavar='TIME', help='wall-clock time')
+    parser.add_argument('-g', '--game-frames', type=int,
+                        default=0, metavar='FRAMES', help='game-clock frames')
+    parser.add_argument('-N', '--disable-renderer', action='store_const',
+                        const=True, help='disable video rendering')
+    parser.add_argument('-T', '--threaded-renderer', action='store_const',
+                        const=True, help='threaded video rendering')
+    parser.add_argument('-s', '--server', metavar='ADDRESS',
+                        help='run on server')
+    parser.add_argument('-S', '--server-command',
+                        metavar='COMMAND', help='command to launch server')
     parser.add_argument('-o', '--out', metavar='FILE', help='output file path')
     parser.add_argument('directory', help='directory containing ROM files')
     args = parser.parse_args()
@@ -188,7 +206,8 @@ if __name__ == '__main__':
         renderer = None
     elif args.threaded_renderer:
         renderer = 'threaded-software'
-    s = Suite(args.directory, wall=args.wall_time, game=args.game_frames, renderer=renderer)
+    s = Suite(args.directory, wall=args.wall_time,
+              game=args.game_frames, renderer=renderer)
     if args.server:
         if args.server_command:
             server = PerfServer(args.server, args.server_command)

@@ -6,6 +6,7 @@ import yaml
 
 mgba.log.install_default(mgba.log.NullLogger())
 
+
 def flatten(d):
     l = []
     for k, v in d.tests.items():
@@ -16,24 +17,29 @@ def flatten(d):
     l.sort()
     return l
 
+
 def pytest_generate_tests(metafunc):
     if 'vtest' not in metafunc.fixturenames:
         return
 
-    tests = cinema.test.gather_tests(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'cinema'))
+    tests = cinema.test.gather_tests(os.path.join(
+        os.path.dirname(__file__), '..', '..', '..', 'cinema'))
     testList = flatten(tests)
     params = []
     for test in testList:
         marks = []
         xfail = test.settings.get('fail')
         if xfail:
-            marks = pytest.mark.xfail(reason=xfail if isinstance(xfail, str) else None)
+            marks = pytest.mark.xfail(
+                reason=xfail if isinstance(xfail, str) else None)
         params.append(pytest.param(test, id=test.name, marks=marks))
     metafunc.parametrize('vtest', params, indirect=True)
+
 
 @pytest.fixture
 def vtest(request):
     return request.param
+
 
 def test_video(vtest, pytestconfig):
     vtest.setup()
