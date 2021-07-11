@@ -7,6 +7,7 @@
 
 #include "CoreController.h"
 #include "LogController.h"
+#include "VFileDevice.h"
 
 #include <QDir>
 
@@ -59,7 +60,7 @@ CoreController* CoreManager::loadGame(const QString& path) {
 	VDir* archive = VDirOpenArchive(path.toUtf8().constData());
 	if (archive) {
 		VFile* vfOriginal = VDirFindFirst(archive, [](VFile* vf) {
-			return mCoreIsCompatible(vf) != PLATFORM_NONE;
+			return mCoreIsCompatible(vf) != mPLATFORM_NONE;
 		});
 		ssize_t size;
 		if (vfOriginal && (size = vfOriginal->size(vfOriginal)) > 0) {
@@ -83,6 +84,7 @@ CoreController* CoreManager::loadGame(VFile* vf, const QString& path, const QStr
 
 	mCore* core = mCoreFindVF(vf);
 	if (!core) {
+		vf->close(vf);
 		LOG(QT, ERROR) << tr("Could not load game. Are you sure it's in the correct format?");
 		return nullptr;
 	}
@@ -132,7 +134,7 @@ CoreController* CoreManager::loadBIOS(int platform, const QString& path) {
 	mCore* core = nullptr;
 	switch (platform) {
 #ifdef M_CORE_GBA
-	case PLATFORM_GBA:
+	case mPLATFORM_GBA:
 		core = GBACoreCreate();
 		break;
 #endif

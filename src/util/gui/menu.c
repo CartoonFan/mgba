@@ -16,6 +16,34 @@
 
 DEFINE_VECTOR(GUIMenuItemList, struct GUIMenuItem);
 
+void _itemNext(struct GUIMenuItem* item, bool wrap) {
+	if (item->state < item->nStates - 1) {
+		unsigned oldState = item->state;
+		do {
+			++item->state;
+		} while (!item->validStates[item->state] && item->state < item->nStates - 1);
+		if (!item->validStates[item->state]) {
+			item->state = oldState;
+		}
+	} else if (wrap) {
+		item->state = 0;
+	}
+}
+
+void _itemPrev(struct GUIMenuItem* item, bool wrap) {
+	if (item->state > 0) {
+		unsigned oldState = item->state;
+		do {
+			--item->state;
+		} while (!item->validStates[item->state] && item->state > 0);
+		if (!item->validStates[item->state]) {
+			item->state = oldState;
+		}
+	} else if (wrap) {
+		item->state = item->nStates - 1;
+	}
+}
+
 enum GUIMenuExitReason GUIShowMenu(struct GUIParams* params, struct GUIMenu* menu, struct GUIMenuItem** item) {
 	size_t start = 0;
 	size_t lineHeight = GUIFontHeight(params->font);
@@ -52,15 +80,7 @@ enum GUIMenuExitReason GUIShowMenu(struct GUIParams* params, struct GUIMenu* men
 		if (newInput & (1 << GUI_INPUT_LEFT)) {
 			struct GUIMenuItem* item = GUIMenuItemListGetPointer(&menu->items, menu->index);
 			if (item->validStates) {
-				if (item->state > 0) {
-					unsigned oldState = item->state;
-					do {
-						--item->state;
-					} while (!item->validStates[item->state] && item->state > 0);
-					if (!item->validStates[item->state]) {
-						item->state = oldState;
-					}
-				}
+				_itemPrev(item, false);
 			} else if (menu->index >= pageSize) {
 				menu->index -= pageSize;
 			} else {
@@ -70,15 +90,7 @@ enum GUIMenuExitReason GUIShowMenu(struct GUIParams* params, struct GUIMenu* men
 		if (newInput & (1 << GUI_INPUT_RIGHT)) {
 			struct GUIMenuItem* item = GUIMenuItemListGetPointer(&menu->items, menu->index);
 			if (item->validStates) {
-				if (item->state < item->nStates - 1) {
-					unsigned oldState = item->state;
-					do {
-						++item->state;
-					} while (!item->validStates[item->state] && item->state < item->nStates - 1);
-					if (!item->validStates[item->state]) {
-						item->state = oldState;
-					}
-				}
+				_itemNext(item, false);
 			} else if (menu->index + pageSize < GUIMenuItemListSize(&menu->items)) {
 				menu->index += pageSize;
 			} else {
@@ -125,6 +137,8 @@ enum GUIMenuExitReason GUIShowMenu(struct GUIParams* params, struct GUIMenu* men
 				if (reason != GUI_MENU_EXIT_BACK) {
 					return reason;
 				}
+			} else if ((*item)->validStates && GUIVariantIsString((*item)->data)) {
+				_itemNext(*item, true);
 			} else {
 				return GUI_MENU_EXIT_ACCEPT;
 			}
@@ -138,7 +152,7 @@ enum GUIMenuExitReason GUIShowMenu(struct GUIParams* params, struct GUIMenu* men
 
 		params->drawStart();
 		if (menu->background) {
-			menu->background->draw(menu->background, GUIMenuItemListGetPointer(&menu->items, menu->index)->data);
+			menu->background->draw(menu->background, GUIMenuItemListGetPointer(&menu->items, menu->index)->data.v.p);
 		}
 		if (params->guiPrepare) {
 			params->guiPrepare();
@@ -264,20 +278,20 @@ void GUIDrawBattery(struct GUIParams* params) {
 		return;
 	}
 	uint32_t color = 0xFF000000;
-	if (state == (BATTERY_CHARGING | BATTERY_FULL)) {
+	if ((state & (BATTERY_CHARGING | BATTERY_FULL)) == (BATTERY_CHARGING | BATTERY_FULL)) {
 		color |= 0xFFC060;
 	} else if (state & BATTERY_CHARGING) {
 		color |= 0x60FF60;
-	} else if (state >= BATTERY_HALF) {
+	} else if ((state & BATTERY_VALUE) >= BATTERY_HALF) {
 		color |= 0xFFFFFF;
-	} else if (state == BATTERY_LOW) {
+	} else if ((state & BATTERY_VALUE) >= BATTERY_LOW) {
 		color |= 0x30FFFF;
 	} else {
 		color |= 0x3030FF;
 	}
 
 	enum GUIIcon batteryIcon;
-	switch (state & ~BATTERY_CHARGING) {
+	switch ((state & BATTERY_VALUE) - (state & BATTERY_VALUE) % 25) {
 	case BATTERY_EMPTY:
 		batteryIcon = GUI_ICON_BATTERY_EMPTY;
 		break;
@@ -298,7 +312,12 @@ void GUIDrawBattery(struct GUIParams* params) {
 		break;
 	}
 
-	GUIFontDrawIcon(params->font, params->width, 0, GUI_ALIGN_RIGHT, GUI_ORIENT_0, color, batteryIcon);
+	GUIFontDrawIcon(params->font, params->width, GUIFontHeight(params->font) + 2, GUI_ALIGN_RIGHT | GUI_ALIGN_BOTTOM, GUI_ORIENT_0, color, batteryIcon);
+	if (state & BATTERY_PERCENTAGE_VALID) {
+		unsigned width;
+		GUIFontIconMetrics(params->font, batteryIcon, &width, NULL);
+		GUIFontPrintf(params->font, params->width - width, GUIFontHeight(params->font), GUI_ALIGN_RIGHT, color, "%u%%", state & BATTERY_VALUE);
+	}
 }
 
 void GUIDrawClock(struct GUIParams* params) {

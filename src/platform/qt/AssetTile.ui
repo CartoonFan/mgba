@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>AssetTile</string>
+   <string notr="true">AssetTile</string>
   </property>
   <property name="title">
    <string/>
@@ -45,13 +45,13 @@
      <item>
       <widget class="QLabel" name="tileId">
        <property name="text">
-        <string>0</string>
+        <string notr="true">0</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
        <property name="textInteractionFlags">
-        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
        </property>
       </widget>
      </item>
@@ -69,10 +69,13 @@
      <item>
       <widget class="QLabel" name="paletteId">
        <property name="text">
-        <string>0</string>
+        <string notr="true">0</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
        </property>
       </widget>
      </item>
@@ -90,13 +93,13 @@
      <item>
       <widget class="QLabel" name="address">
        <property name="text">
-        <string>0x06000000</string>
+        <string notr="true">0x06000000</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
        <property name="textInteractionFlags">
-        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
        </property>
       </widget>
      </item>
@@ -160,21 +163,30 @@
        <item>
         <widget class="QLabel" name="r">
          <property name="text">
-          <string>0x00 (00)</string>
+          <string notr="true">0x00 (00)</string>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="g">
          <property name="text">
-          <string>0x00 (00)</string>
+          <string notr="true">0x00 (00)</string>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="b">
          <property name="text">
-          <string>0x00 (00)</string>
+          <string notr="true">0x00 (00)</string>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
@@ -186,15 +198,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QGBA::AssetInfo</class>
-   <extends>QGroupBox</extends>
-   <header>AssetInfo.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>QGBA::Swatch</class>
    <extends>QWidget</extends>
    <header>Swatch.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QGBA::AssetInfo</class>
+   <extends>QGroupBox</extends>
+   <header>AssetInfo.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

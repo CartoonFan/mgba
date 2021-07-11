@@ -104,81 +104,86 @@ static void _RegisterRamReset(struct GBA* gba) {
 		memset(gba->audio.psg.ch3.wavedata32, 0, sizeof(gba->audio.psg.ch3.wavedata32));
 	}
 	if (registers & 0x80) {
-		cpu->memory.store16(cpu, BASE_IO | 0x04, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x06, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x08, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x0A, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x0C, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x0E, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x10, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x12, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x14, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x16, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x18, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x1A, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x1C, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x1E, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DISPSTAT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_VCOUNT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG0CNT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG1CNT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG2CNT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG3CNT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG0HOFS, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG0VOFS, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG1HOFS, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG1VOFS, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG2HOFS, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG2VOFS, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG3HOFS, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BG3VOFS, 0, 0);
 		cpu->memory.store16(cpu, BASE_IO | REG_BG2PA, 0x100, 0);
 		cpu->memory.store16(cpu, BASE_IO | REG_BG2PB, 0, 0);
 		cpu->memory.store16(cpu, BASE_IO | REG_BG2PC, 0, 0);
 		cpu->memory.store16(cpu, BASE_IO | REG_BG2PD, 0x100, 0);
-		cpu->memory.store32(cpu, BASE_IO | 0x28, 0, 0);
-		cpu->memory.store32(cpu, BASE_IO | 0x2C, 0, 0);
+		cpu->memory.store32(cpu, BASE_IO | REG_BG2X_LO, 0, 0);
+		cpu->memory.store32(cpu, BASE_IO | REG_BG2Y_LO, 0, 0);
 		cpu->memory.store16(cpu, BASE_IO | REG_BG3PA, 0x100, 0);
 		cpu->memory.store16(cpu, BASE_IO | REG_BG3PB, 0, 0);
 		cpu->memory.store16(cpu, BASE_IO | REG_BG3PC, 0, 0);
 		cpu->memory.store16(cpu, BASE_IO | REG_BG3PD, 0x100, 0);
-		cpu->memory.store32(cpu, BASE_IO | 0x38, 0, 0);
-		cpu->memory.store32(cpu, BASE_IO | 0x3C, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x40, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x42, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x44, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x46, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x48, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x4A, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x4C, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x50, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x52, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x54, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xB0, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xB2, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xB4, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xB6, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xB8, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xBA, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xBC, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xBE, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xC0, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xC2, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xC4, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xC6, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xC8, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xCA, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xCC, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xCE, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xD0, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xD2, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xD4, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xD6, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xD8, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xDA, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xDC, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0xDE, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x100, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x102, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x104, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x106, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x108, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x10A, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x10C, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x10E, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x200, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x202, 0xFFFF, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x204, 0, 0);
-		cpu->memory.store16(cpu, BASE_IO | 0x208, 0, 0);
+		cpu->memory.store32(cpu, BASE_IO | REG_BG3X_LO, 0, 0);
+		cpu->memory.store32(cpu, BASE_IO | REG_BG3Y_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_WIN0H, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_WIN1H, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_WIN0V, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_WIN1V, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_WININ, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_WINOUT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_MOSAIC, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BLDCNT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BLDALPHA, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_BLDY, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA0SAD_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA0SAD_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA0DAD_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA0DAD_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA0CNT_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA0CNT_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA1SAD_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA1SAD_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA1DAD_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA1DAD_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA1CNT_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA1CNT_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA2SAD_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA2SAD_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA2DAD_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA2DAD_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA2CNT_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA2CNT_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA3SAD_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA3SAD_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA3DAD_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA3DAD_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA3CNT_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_DMA3CNT_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_TM0CNT_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_TM0CNT_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_TM1CNT_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_TM1CNT_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_TM2CNT_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_TM2CNT_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_TM3CNT_LO, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_TM3CNT_HI, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_IE, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_IF, 0xFFFF, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_WAITCNT, 0, 0);
+		cpu->memory.store16(cpu, BASE_IO | REG_IME, 0, 0);
 	}
 	if (registers & 0x9C) {
 		gba->video.renderer->reset(gba->video.renderer);
+		gba->video.renderer->writeVideoRegister(gba->video.renderer, REG_DISPCNT, gba->memory.io[REG_DISPCNT >> 1]);
+		int i;
+		for (i = REG_BG0CNT; i < REG_SOUND1CNT_LO; i += 2) {
+			gba->video.renderer->writeVideoRegister(gba->video.renderer, i, gba->memory.io[i >> 1]);
+		}
 	}
 }
 
@@ -271,32 +276,37 @@ static void _MidiKey2Freq(struct GBA* gba) {
 
 static void _Div(struct GBA* gba, int32_t num, int32_t denom) {
 	struct ARMCore* cpu = gba->cpu;
-	if (denom != 0 && (denom != -1 || num != INT32_MIN)) {
-		div_t result = div(num, denom);
-		cpu->gprs[0] = result.quot;
-		cpu->gprs[1] = result.rem;
-		cpu->gprs[3] = abs(result.quot);
-	} else if (denom == 0) {
-		mLOG(GBA_BIOS, GAME_ERROR, "Attempting to divide %i by zero!", num);
+	if (denom == 0) {
+		if (num == 0 || num == -1 || num == 1) {
+			mLOG(GBA_BIOS, GAME_ERROR, "Attempting to divide %i by zero!", num);
+		} else {
+			mLOG(GBA_BIOS, FATAL, "Attempting to divide %i by zero!", num);
+		}
 		// If abs(num) > 1, this should hang, but that would be painful to
-		// emulate in HLE, and no game will get into a state where it hangs...
+		// emulate in HLE, and no game will get into a state under normal
+		// operation where it hangs...
 		cpu->gprs[0] = (num < 0) ? -1 : 1;
 		cpu->gprs[1] = num;
 		cpu->gprs[3] = 1;
-	} else {
+	} else if (denom == -1 && num == INT32_MIN) {
 		mLOG(GBA_BIOS, GAME_ERROR, "Attempting to divide INT_MIN by -1!");
 		cpu->gprs[0] = INT32_MIN;
 		cpu->gprs[1] = 0;
 		cpu->gprs[3] = INT32_MIN;
+	} else {
+		div_t result = div(num, denom);
+		cpu->gprs[0] = result.quot;
+		cpu->gprs[1] = result.rem;
+		cpu->gprs[3] = abs(result.quot);
 	}
 	int loops = clz32(denom) - clz32(num);
 	if (loops < 1) {
 		loops = 1;
 	}
-	cpu->cycles += 4 /* prologue */ + 13 * loops + 7 /* epilogue */;
+	gba->biosStall = 4 /* prologue */ + 13 * loops + 7 /* epilogue */;
 }
 
-static int16_t _ArcTan(int32_t i, int32_t* r1, int32_t* r3, int32_t* cycles) {
+static int16_t _ArcTan(int32_t i, int32_t* r1, int32_t* r3, uint32_t* cycles) {
 	int currentCycles = 37;
 	currentCycles += _mulWait(i * i);
 	int32_t a = -((i * i) >> 14);
@@ -320,11 +330,11 @@ static int16_t _ArcTan(int32_t i, int32_t* r1, int32_t* r3, int32_t* cycles) {
 	if (r3) {
 		*r3 = b;
 	}
-	*cycles += currentCycles;
+	*cycles = currentCycles;
 	return (i * b) >> 16;
 }
 
-static int16_t _ArcTan2(int32_t x, int32_t y, int32_t* r1, int32_t* cycles) {
+static int16_t _ArcTan2(int32_t x, int32_t y, int32_t* r1, uint32_t* cycles) {
 	if (!y) {
 		if (x >= 0) {
 			return 0;
@@ -358,9 +368,9 @@ static int16_t _ArcTan2(int32_t x, int32_t y, int32_t* r1, int32_t* cycles) {
 	}
 }
 
-static int32_t _Sqrt(uint32_t x, int32_t* cycles) {
+static int32_t _Sqrt(uint32_t x, uint32_t* cycles) {
 	if (!x) {
-		*cycles += 53;
+		*cycles = 53;
 		return 0;
 	}
 	int32_t currentCycles = 15;
@@ -407,7 +417,7 @@ static int32_t _Sqrt(uint32_t x, int32_t* cycles) {
 			break;
 		}
 	}
-	*cycles += currentCycles;
+	*cycles = currentCycles;
 	return bound;
 }
 
@@ -417,6 +427,9 @@ void GBASwi16(struct ARMCore* cpu, int immediate) {
 	    immediate, cpu->gprs[0], cpu->gprs[1], cpu->gprs[2], cpu->gprs[3]);
 
 	switch (immediate) {
+	case 0xF0: // Used for internal stall counting
+		cpu->gprs[12] = gba->biosStall;
+		return;
 	case 0xFA:
 		GBAPrintFlush(gba);
 		return;
@@ -426,6 +439,8 @@ void GBASwi16(struct ARMCore* cpu, int immediate) {
 		ARMRaiseSWI(cpu);
 		return;
 	}
+
+	bool useStall = false;
 	switch (immediate) {
 	case GBA_SWI_SOFT_RESET:
 		_SoftReset(gba);
@@ -447,19 +462,24 @@ void GBASwi16(struct ARMCore* cpu, int immediate) {
 		ARMRaiseSWI(cpu);
 		return;
 	case GBA_SWI_DIV:
+		useStall = true;
 		_Div(gba, cpu->gprs[0], cpu->gprs[1]);
 		break;
 	case GBA_SWI_DIV_ARM:
+		useStall = true;
 		_Div(gba, cpu->gprs[1], cpu->gprs[0]);
 		break;
 	case GBA_SWI_SQRT:
-		cpu->gprs[0] = _Sqrt(cpu->gprs[0], &cpu->cycles);
+		useStall = true;
+		cpu->gprs[0] = _Sqrt(cpu->gprs[0], &gba->biosStall);
 		break;
 	case GBA_SWI_ARCTAN:
-		cpu->gprs[0] = _ArcTan(cpu->gprs[0], &cpu->gprs[1], &cpu->gprs[3], &cpu->cycles);
+		useStall = true;
+		cpu->gprs[0] = _ArcTan(cpu->gprs[0], &cpu->gprs[1], &cpu->gprs[3], &gba->biosStall);
 		break;
 	case GBA_SWI_ARCTAN2:
-		cpu->gprs[0] = (uint16_t) _ArcTan2(cpu->gprs[0], cpu->gprs[1], &cpu->gprs[1], &cpu->cycles);
+		useStall = true;
+		cpu->gprs[0] = (uint16_t) _ArcTan2(cpu->gprs[0], cpu->gprs[1], &cpu->gprs[1], &gba->biosStall);
 		cpu->gprs[3] = 0x170;
 		break;
 	case GBA_SWI_CPU_SET:
@@ -505,7 +525,7 @@ void GBASwi16(struct ARMCore* cpu, int immediate) {
 		break;
 	case GBA_SWI_LZ77_UNCOMP_WRAM:
 	case GBA_SWI_LZ77_UNCOMP_VRAM:
-		if (cpu->gprs[0] < BASE_WORKING_RAM) {
+		if (!(cpu->gprs[0] & 0x0E000000)) {
 			mLOG(GBA_BIOS, GAME_ERROR, "Bad LZ77 source");
 			break;
 		}
@@ -521,7 +541,7 @@ void GBASwi16(struct ARMCore* cpu, int immediate) {
 		}
 		break;
 	case GBA_SWI_HUFFMAN_UNCOMP:
-		if (cpu->gprs[0] < BASE_WORKING_RAM) {
+		if (!(cpu->gprs[0] & 0x0E000000)) {
 			mLOG(GBA_BIOS, GAME_ERROR, "Bad Huffman source");
 			break;
 		}
@@ -538,7 +558,7 @@ void GBASwi16(struct ARMCore* cpu, int immediate) {
 		break;
 	case GBA_SWI_RL_UNCOMP_WRAM:
 	case GBA_SWI_RL_UNCOMP_VRAM:
-		if (cpu->gprs[0] < BASE_WORKING_RAM) {
+		if (!(cpu->gprs[0] & 0x0E000000)) {
 			mLOG(GBA_BIOS, GAME_ERROR, "Bad RL source");
 			break;
 		}
@@ -556,7 +576,7 @@ void GBASwi16(struct ARMCore* cpu, int immediate) {
 	case GBA_SWI_DIFF_8BIT_UNFILTER_WRAM:
 	case GBA_SWI_DIFF_8BIT_UNFILTER_VRAM:
 	case GBA_SWI_DIFF_16BIT_UNFILTER:
-		if (cpu->gprs[0] < BASE_WORKING_RAM) {
+		if (!(cpu->gprs[0] & 0x0E000000)) {
 			mLOG(GBA_BIOS, GAME_ERROR, "Bad UnFilter source");
 			break;
 		}
@@ -584,12 +604,25 @@ void GBASwi16(struct ARMCore* cpu, int immediate) {
 	default:
 		mLOG(GBA_BIOS, STUB, "Stub software interrupt: %02X", immediate);
 	}
-	gba->cpu->cycles += 45 + cpu->memory.activeNonseqCycles16 /* 8 bit load for SWI # */;
-	// Return cycles
-	if (gba->cpu->executionMode == MODE_ARM) {
-		gba->cpu->cycles += cpu->memory.activeNonseqCycles32 + cpu->memory.activeSeqCycles32;
-	} else {
-		gba->cpu->cycles += cpu->memory.activeNonseqCycles16 + cpu->memory.activeSeqCycles16;
+	if (useStall) {
+		if (gba->biosStall >= 18) {
+			gba->biosStall -= 18;
+			gba->cpu->cycles += gba->biosStall & 3;
+			gba->biosStall &= ~3;
+			ARMRaiseSWI(cpu);
+		} else {
+			gba->cpu->cycles += gba->biosStall;
+			useStall = false;
+		}
+	}
+	if (!useStall) {
+		gba->cpu->cycles += 45 + cpu->memory.activeNonseqCycles16 /* 8 bit load for SWI # */;
+		// Return cycles
+		if (gba->cpu->executionMode == MODE_ARM) {
+			gba->cpu->cycles += cpu->memory.activeNonseqCycles32 + cpu->memory.activeSeqCycles32;
+		} else {
+			gba->cpu->cycles += cpu->memory.activeNonseqCycles16 + cpu->memory.activeSeqCycles16;
+		}
 	}
 	gba->memory.biosPrefetch = 0xE3A02004;
 }
@@ -631,6 +664,13 @@ static void _unLz77(struct GBA* gba, int width) {
 				while (bytes--) {
 					if (remaining) {
 						--remaining;
+					} else {
+						mLOG(GBA_BIOS, GAME_ERROR, "Improperly compressed LZ77 data at %08X. "
+						     "This will lead to a buffer overrun at %08X and may crash on hardware.",
+						     cpu->gprs[0], cpu->gprs[1]);
+						if (gba->vbaBugCompat) {
+							break;
+						}
 					}
 					if (width == 2) {
 						byte = (int16_t) cpu->memory.load16(cpu, disp & ~1, 0);

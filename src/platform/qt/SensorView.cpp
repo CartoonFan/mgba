@@ -8,6 +8,7 @@
 #include "CoreController.h"
 #include "GamepadAxisEvent.h"
 #include "InputController.h"
+#include "utils.h"
 
 #include <mgba/core/core.h>
 #include <mgba/internal/gba/gba.h>
@@ -78,14 +79,11 @@ void SensorView::setController(std::shared_ptr<CoreController> controller) {
 void SensorView::jiggerer(QAbstractButton* button, void (InputController::*setter)(int)) {
 	connect(button, &QAbstractButton::toggled, [this, button, setter](bool checked) {
 		if (!checked) {
-			m_jiggered = nullptr;
+			m_button = nullptr;
 		} else {
 			button->setFocus();
-			m_jiggered = [this, button, setter](int axis) {
-				(m_input->*setter)(axis);
-				button->setChecked(false);
-				button->clearFocus();
-			};
+			m_button = button;
+			m_setter = setter;
 		}
 	});
 	button->installEventFilter(this);
@@ -105,8 +103,12 @@ bool SensorView::eventFilter(QObject*, QEvent* event) {
 	if (event->type() == GamepadAxisEvent::Type()) {
 		GamepadAxisEvent* gae = static_cast<GamepadAxisEvent*>(event);
 		gae->accept();
-		if (m_jiggered && gae->direction() != GamepadAxisEvent::NEUTRAL && gae->isNew()) {
-			m_jiggered(gae->axis());
+		if (m_button && gae->direction() != GamepadAxisEvent::NEUTRAL && gae->isNew()) {
+			m_button->removeEventFilter(this);
+			m_button->clearFocus();
+			m_button->setChecked(false);
+			(m_input->*m_setter)(gae->axis());
+			m_button = nullptr;
 		}
 		return true;
 	}
@@ -129,7 +131,7 @@ void SensorView::updateSensors() {
 }
 
 void SensorView::setLuminanceValue(int value) {
-	value = std::max(0, std::min(value, 255));
+	value = clamp(value, 0, 255);
 	if (m_input) {
 		m_input->setLuminanceValue(value);
 	}

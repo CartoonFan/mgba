@@ -68,6 +68,9 @@ void GBASavedataDeinit(struct GBASavedata* savedata) {
 		case SAVEDATA_SRAM:
 			mappedMemoryFree(savedata->data, SIZE_CART_SRAM);
 			break;
+		case SAVEDATA_SRAM512:
+			mappedMemoryFree(savedata->data, SIZE_CART_SRAM512);
+			break;
 		case SAVEDATA_FLASH512:
 			mappedMemoryFree(savedata->data, SIZE_CART_FLASH512);
 			break;
@@ -124,6 +127,8 @@ bool GBASavedataClone(struct GBASavedata* savedata, struct VFile* out) {
 		switch (savedata->type) {
 		case SAVEDATA_SRAM:
 			return out->write(out, savedata->data, SIZE_CART_SRAM) == SIZE_CART_SRAM;
+		case SAVEDATA_SRAM512:
+			return out->write(out, savedata->data, SIZE_CART_SRAM512) == SIZE_CART_SRAM512;
 		case SAVEDATA_FLASH512:
 			return out->write(out, savedata->data, SIZE_CART_FLASH512) == SIZE_CART_FLASH512;
 		case SAVEDATA_FLASH1M:
@@ -139,6 +144,7 @@ bool GBASavedataClone(struct GBASavedata* savedata, struct VFile* out) {
 	} else if (savedata->vf) {
 		off_t read = 0;
 		uint8_t buffer[2048];
+		savedata->vf->seek(savedata->vf, 0, SEEK_SET);
 		do {
 			read = savedata->vf->read(savedata->vf, buffer, sizeof(buffer));
 			out->write(out, buffer, read);
@@ -152,6 +158,8 @@ size_t GBASavedataSize(const struct GBASavedata* savedata) {
 	switch (savedata->type) {
 	case SAVEDATA_SRAM:
 		return SIZE_CART_SRAM;
+	case SAVEDATA_SRAM512:
+		return SIZE_CART_SRAM512;
 	case SAVEDATA_FLASH512:
 		return SIZE_CART_FLASH512;
 	case SAVEDATA_FLASH1M:
@@ -231,6 +239,9 @@ void GBASavedataForceType(struct GBASavedata* savedata, enum SavedataType type) 
 		break;
 	case SAVEDATA_SRAM:
 		GBASavedataInitSRAM(savedata);
+		break;
+	case SAVEDATA_SRAM512:
+		GBASavedataInitSRAM512(savedata);
 		break;
 	case SAVEDATA_FORCE_NONE:
 		savedata->type = SAVEDATA_FORCE_NONE;
@@ -318,6 +329,30 @@ void GBASavedataInitSRAM(struct GBASavedata* savedata) {
 
 	if (end < SIZE_CART_SRAM) {
 		memset(&savedata->data[end], 0xFF, SIZE_CART_SRAM - end);
+	}
+}
+
+void GBASavedataInitSRAM512(struct GBASavedata* savedata) {
+	if (savedata->type == SAVEDATA_AUTODETECT) {
+		savedata->type = SAVEDATA_SRAM512;
+	} else {
+		mLOG(GBA_SAVE, WARN, "Can't re-initialize savedata");
+		return;
+	}
+	off_t end;
+	if (!savedata->vf) {
+		end = 0;
+		savedata->data = anonymousMemoryMap(SIZE_CART_SRAM512);
+	} else {
+		end = savedata->vf->size(savedata->vf);
+		if (end < SIZE_CART_SRAM512) {
+			savedata->vf->truncate(savedata->vf, SIZE_CART_SRAM512);
+		}
+		savedata->data = savedata->vf->map(savedata->vf, SIZE_CART_SRAM512, savedata->mapMode);
+	}
+
+	if (end < SIZE_CART_SRAM512) {
+		memset(&savedata->data[end], 0xFF, SIZE_CART_SRAM512 - end);
 	}
 }
 
@@ -533,16 +568,14 @@ void GBASavedataClean(struct GBASavedata* savedata, uint32_t frameCount) {
 	if (savedata->dirty & SAVEDATA_DIRT_NEW) {
 		savedata->dirtAge = frameCount;
 		savedata->dirty &= ~SAVEDATA_DIRT_NEW;
-		if (!(savedata->dirty & SAVEDATA_DIRT_SEEN)) {
-			savedata->dirty |= SAVEDATA_DIRT_SEEN;
-		}
+		savedata->dirty |= SAVEDATA_DIRT_SEEN;
 	} else if ((savedata->dirty & SAVEDATA_DIRT_SEEN) && frameCount - savedata->dirtAge > CLEANUP_THRESHOLD) {
 		if (savedata->maskWriteback) {
 			GBASavedataUnmask(savedata);
 		}
+		savedata->dirty = 0;
 		if (savedata->mapMode & MAP_WRITE) {
 			size_t size = GBASavedataSize(savedata);
-			savedata->dirty = 0;
 			if (savedata->data && savedata->vf->sync(savedata->vf, savedata->data, size)) {
 				mLOG(GBA_SAVE, INFO, "Savedata synced");
 			} else {
@@ -598,7 +631,6 @@ void GBASavedataDeserialize(struct GBASavedata* savedata, const struct GBASerial
 
 void _flashSwitchBank(struct GBASavedata* savedata, int bank) {
 	mLOG(GBA_SAVE, DEBUG, "Performing flash bank switch to bank %i", bank);
-	savedata->currentBank = &savedata->data[bank << 16];
 	if (bank > 0 && savedata->type == SAVEDATA_FLASH512) {
 		mLOG(GBA_SAVE, INFO, "Updating flash chip from 512kb to 1Mb");
 		savedata->type = SAVEDATA_FLASH1M;
@@ -613,6 +645,7 @@ void _flashSwitchBank(struct GBASavedata* savedata, int bank) {
 			}
 		}
 	}
+	savedata->currentBank = &savedata->data[bank << 16];
 }
 
 void _flashErase(struct GBASavedata* savedata) {

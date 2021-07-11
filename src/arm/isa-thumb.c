@@ -25,6 +25,12 @@
 	cpu->cpsr.c = ARM_BORROW_FROM(M, N, D); \
 	cpu->cpsr.v = ARM_V_SUBTRACTION(M, N, D);
 
+#define THUMB_SUBTRACTION_CARRY_S(M, N, D, C) \
+	cpu->cpsr.n = ARM_SIGN(D); \
+	cpu->cpsr.z = !(D); \
+	cpu->cpsr.c = ARM_BORROW_FROM_CARRY(M, N, D, C); \
+	cpu->cpsr.v = ARM_V_SUBTRACTION(M, N, D);
+
 #define THUMB_NEUTRAL_S(M, N, D) \
 	cpu->cpsr.n = ARM_SIGN(D); \
 	cpu->cpsr.z = !(D);
@@ -50,7 +56,7 @@
 	currentCycles += cpu->memory.activeNonseqCycles16 - cpu->memory.activeSeqCycles16;
 
 #define DEFINE_INSTRUCTION_THUMB(NAME, BODY) \
-	static void _ThumbInstruction ## NAME (struct ARMCore* cpu, uint16_t opcode) {  \
+	static void _ThumbInstruction ## NAME (struct ARMCore* cpu, unsigned opcode) {  \
 		int currentCycles = THUMB_PREFETCH_CYCLES; \
 		BODY; \
 		cpu->cycles += currentCycles; \
@@ -203,10 +209,11 @@ DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(ADC,
 	THUMB_ADDITION_S(d, n, cpu->gprs[rd]);)
 
 DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(SBC,
-	int n = cpu->gprs[rn] + !cpu->cpsr.c;
+	int n = cpu->gprs[rn];
 	int d = cpu->gprs[rd];
-	cpu->gprs[rd] = d - n;
-	THUMB_SUBTRACTION_S(d, n, cpu->gprs[rd]);)
+	cpu->gprs[rd] = d - n - !cpu->cpsr.c;
+	THUMB_SUBTRACTION_CARRY_S(d, n, cpu->gprs[rd], !cpu->cpsr.c);)
+
 DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(ROR,
 	int rs = cpu->gprs[rn] & 0xFF;
 	if (rs) {
@@ -225,7 +232,7 @@ DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(NEG, THUMB_SUBTRACTION(cpu->gprs[rd], 0, cp
 DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(CMP2, int32_t aluOut = cpu->gprs[rd] - cpu->gprs[rn]; THUMB_SUBTRACTION_S(cpu->gprs[rd], cpu->gprs[rn], aluOut))
 DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(CMN, int32_t aluOut = cpu->gprs[rd] + cpu->gprs[rn]; THUMB_ADDITION_S(cpu->gprs[rd], cpu->gprs[rn], aluOut))
 DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(ORR, cpu->gprs[rd] = cpu->gprs[rd] | cpu->gprs[rn]; THUMB_NEUTRAL_S( , , cpu->gprs[rd]))
-DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(MUL, ARM_WAIT_MUL(cpu->gprs[rd]); cpu->gprs[rd] *= cpu->gprs[rn]; THUMB_NEUTRAL_S( , , cpu->gprs[rd]); currentCycles += cpu->memory.activeNonseqCycles16 - cpu->memory.activeSeqCycles16)
+DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(MUL, ARM_WAIT_MUL(cpu->gprs[rd], 0); cpu->gprs[rd] *= cpu->gprs[rn]; THUMB_NEUTRAL_S( , , cpu->gprs[rd]); currentCycles += cpu->memory.activeNonseqCycles16 - cpu->memory.activeSeqCycles16)
 DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(BIC, cpu->gprs[rd] = cpu->gprs[rd] & ~cpu->gprs[rn]; THUMB_NEUTRAL_S( , , cpu->gprs[rd]))
 DEFINE_DATA_FORM_5_INSTRUCTION_THUMB(MVN, cpu->gprs[rd] = ~cpu->gprs[rn]; THUMB_NEUTRAL_S( , , cpu->gprs[rd]))
 

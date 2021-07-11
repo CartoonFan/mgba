@@ -10,13 +10,16 @@
 
 CXX_GUARD_START
 
+#include <mgba/core/interface.h>
+
 enum GBModel {
 	GB_MODEL_AUTODETECT = 0xFF,
 	GB_MODEL_DMG  = 0x00,
 	GB_MODEL_SGB  = 0x20,
 	GB_MODEL_MGB  = 0x40,
-	GB_MODEL_SGB2 = 0x60,
+	GB_MODEL_SGB2 = GB_MODEL_MGB | GB_MODEL_SGB,
 	GB_MODEL_CGB  = 0x80,
+	GB_MODEL_SCGB = GB_MODEL_CGB | GB_MODEL_SGB,
 	GB_MODEL_AGB  = 0xC0
 };
 
@@ -34,9 +37,18 @@ enum GBMemoryBankControllerType {
 	GB_HuC3 = 0x12,
 	GB_POCKETCAM = 0x13,
 	GB_TAMA5 = 0x14,
-	GB_UNL_WISDOM_TREE = 0x20,
 	GB_MBC3_RTC = 0x103,
-	GB_MBC5_RUMBLE = 0x105
+	GB_MBC5_RUMBLE = 0x105,
+	GB_UNL_WISDOM_TREE = 0x200,
+	GB_UNL_PKJD = 0x203,
+	GB_UNL_BBD = 0x220, // Also used as a mask for MBCs that need special read behavior
+	GB_UNL_HITEK = 0x221,
+};
+
+enum GBVideoLayer {
+	GB_LAYER_BACKGROUND = 0,
+	GB_LAYER_WINDOW,
+	GB_LAYER_OBJ
 };
 
 struct GBSIODriver {
@@ -55,6 +67,8 @@ bool GBIsBIOS(struct VFile* vf);
 
 enum GBModel GBNameToModel(const char*);
 const char* GBModelToName(enum GBModel);
+
+int GBValidModels(const uint8_t* bank0);
 
 CXX_GUARD_END
 

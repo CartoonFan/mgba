@@ -19,12 +19,12 @@ TilePainter::TilePainter(QWidget* parent)
 	setTileCount(3072);
 }
 
-void TilePainter::paintEvent(QPaintEvent* event) {
+void TilePainter::paintEvent(QPaintEvent*) {
 	QPainter painter(this);
 	painter.drawPixmap(QPoint(), m_backing);
 }
 
-void TilePainter::resizeEvent(QResizeEvent* event) {
+void TilePainter::resizeEvent(QResizeEvent*) {
 	int w = width() / m_size;
 	if (!w) {
 		w = 1;
@@ -42,6 +42,16 @@ void TilePainter::mousePressEvent(QMouseEvent* event) {
 	int x = event->x() / m_size;
 	int y = event->y() / m_size;
 	emit indexPressed(y * (width() / m_size) + x);
+}
+
+void TilePainter::clearTile(int index) {
+	QPainter painter(&m_backing);
+	int w = width() / m_size;
+	int x = index % w;
+	int y = index / w;
+	QRect r(x * m_size, y * m_size, m_size, m_size);
+	painter.eraseRect(r);
+	update(r);
 }
 
 void TilePainter::setTile(int index, const color_t* data) {

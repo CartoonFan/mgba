@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 #include "DiscordCoordinator.h"
 
+#include <QDateTime>
+
 #include "CoreController.h"
 #include "GBAApp.h"
 
@@ -31,6 +33,11 @@ static void updatePresence() {
 		discordPresence.details = s_title.toUtf8().constData();
 		discordPresence.instance = 1;
 		discordPresence.largeImageKey = "mgba";
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 8, 0))
+		discordPresence.startTimestamp = QDateTime::currentSecsSinceEpoch();
+#else
+		discordPresence.startTimestamp = QDateTime::currentMSecsSinceEpoch() / 1000;
+#endif
 		Discord_UpdatePresence(&discordPresence);
 	} else {
 		Discord_ClearPresence();
@@ -64,20 +71,11 @@ void gameStarted(std::shared_ptr<CoreController> controller) {
 	s_gameRunning = true;
 
 	CoreController::Interrupter interrupter(controller);
-	mCore *core = controller->thread()->core;
-	s_title = core->dirs.baseName;
-
-#ifdef USE_SQLITE3
-	const NoIntroDB* db = GBAApp::app()->gameDB();
-	NoIntroGame game{};
-	uint32_t crc32 = 0;
-	core->checksum(core, &crc32, CHECKSUM_CRC32);
-
-	if (db && crc32 && NoIntroDBLookupGameByCRC(db, crc32, &game)) {
-		s_title = QLatin1String(game.name);
+	s_title = controller->thread()->core->dirs.baseName;
+	QString dbTitle = controller->dbTitle();
+	if (!dbTitle.isNull()) {
+		s_title = dbTitle;
 	}
-#endif
-
 	updatePresence();
 }
 

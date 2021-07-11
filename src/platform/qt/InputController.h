@@ -10,6 +10,7 @@
 
 #include <QImage>
 #include <QMutex>
+#include <QReadWriteLock>
 #include <QObject>
 #include <QSet>
 #include <QTimer>
@@ -55,8 +56,8 @@ public:
 
 	void setConfiguration(ConfigController* config);
 	void saveConfiguration();
-	void loadConfiguration(uint32_t type);
-	void loadProfile(uint32_t type, const QString& profile);
+	bool loadConfiguration(uint32_t type);
+	bool loadProfile(uint32_t type, const QString& profile);
 	void saveConfiguration(uint32_t type);
 	void saveProfile(uint32_t type, const QString& profile);
 	const char* profileForType(uint32_t type);
@@ -79,6 +80,7 @@ public:
 	void unbindAllAxes(uint32_t type);
 
 	void bindHat(uint32_t type, int hat, GamepadHatEvent::Direction, GBAKey);
+	void unbindAllHats(uint32_t type);
 
 	QStringList connectedGamepads(uint32_t type) const;
 	int gamepad(uint32_t type) const;
@@ -152,10 +154,12 @@ private:
 		QImage resizedImage;
 		bool outOfDate;
 		QMutex mutex;
-		unsigned w, h;
+		int w, h;
 	} m_image;
 
 #ifdef BUILD_QT_MULTIMEDIA
+	bool m_cameraActive = false;
+	QByteArray m_cameraDevice;
 	std::unique_ptr<QCamera> m_camera;
 	VideoDumper m_videoDumper;
 #endif
@@ -181,6 +185,7 @@ private:
 	QTimer m_gamepadTimer{nullptr};
 
 	QSet<GBAKey> m_pendingEvents;
+	QReadWriteLock m_eventsLock;
 };
 
 }

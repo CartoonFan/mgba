@@ -60,6 +60,7 @@ void mVideoThreadProxyReset(struct mVideoLogger* logger) {
 		ConditionWake(&proxyRenderer->toThreadCond);
 		ConditionWait(&proxyRenderer->fromThreadCond, &proxyRenderer->mutex);
 	}
+	RingFIFOClear(&proxyRenderer->dirtyQueue);
 	MutexUnlock(&proxyRenderer->mutex);
 }
 
@@ -178,7 +179,7 @@ static void _wake(struct mVideoLogger* logger, int y) {
 
 static THREAD_ENTRY _proxyThread(void* logger) {
 	struct mVideoThreadProxy* proxyRenderer = logger;
-	ThreadSetName("Proxy Renderer Thread");
+	ThreadSetName("Proxy Rendering");
 
 	MutexLock(&proxyRenderer->mutex);
 	ConditionWake(&proxyRenderer->fromThreadCond);
@@ -206,10 +207,6 @@ static THREAD_ENTRY _proxyThread(void* logger) {
 		}
 	}
 	MutexUnlock(&proxyRenderer->mutex);
-
-#ifdef _3DS
-	svcExitThread();
-#endif
 	return 0;
 }
 

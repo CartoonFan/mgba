@@ -54,18 +54,19 @@ struct retro_core_option_definition option_defs_us[] = {
       "Solar Sensor Level",
       "Sets ambient sunlight intensity. Can be used by games that included a solar sensor in their cartridges, e.g: the Boktai series.",
       {
-         { "0",  NULL },
-         { "1",  NULL },
-         { "2",  NULL },
-         { "3",  NULL },
-         { "4",  NULL },
-         { "5",  NULL },
-         { "6",  NULL },
-         { "7",  NULL },
-         { "8",  NULL },
-         { "9",  NULL },
-         { "10", NULL },
-         { NULL, NULL },
+         { "sensor",  "Use device sensor if available" },
+         { "0",       NULL },
+         { "1",       NULL },
+         { "2",       NULL },
+         { "3",       NULL },
+         { "4",       NULL },
+         { "5",       NULL },
+         { "6",       NULL },
+         { "7",       NULL },
+         { "8",       NULL },
+         { "9",       NULL },
+         { "10",      NULL },
+         { NULL,      NULL },
       },
       "0"
    },
@@ -174,6 +175,28 @@ struct retro_core_option_definition option_defs_us[] = {
       "OFF"
    },
 #endif
+   {
+      "mgba_force_gbp",
+      "Enable Game Boy Player Rumble (requires restart)",
+      "Enabling this will allow compatible games with the Game Boy Player boot logo to make the controller rumble. Due to how Nintendo decided this feature should work, it may cause glitches such as flickering or lag in some of these games.",
+      {
+         { "OFF", NULL },
+         { "ON",  NULL },
+         { NULL, NULL },
+      },
+      "OFF"
+   },
+   {
+      "mgba_gb_colors",
+      "Set default Game Boy palette",
+      "Selects which palette is used for Game Boy games that are not Game Boy Color or Super Game Boy compatible, or if the model is forced to Game Boy.",
+      {
+         // This list is populated at runtime
+         { "Grayscale", NULL },
+         { NULL, NULL },
+      },
+      "Grayscale"
+   },
    { NULL, NULL, NULL, {{0}}, NULL },
 };
 
@@ -190,7 +213,7 @@ struct retro_core_option_definition *option_defs_intl[RETRO_LANGUAGE_LAST] = {
    NULL,           /* RETRO_LANGUAGE_FRENCH */
    NULL,           /* RETRO_LANGUAGE_SPANISH */
    NULL,           /* RETRO_LANGUAGE_GERMAN */
-   NULL,           /* RETRO_LANGUAGE_ITALIAN */
+   option_defs_it, /* RETRO_LANGUAGE_ITALIAN */
    NULL,           /* RETRO_LANGUAGE_DUTCH */
    NULL,           /* RETRO_LANGUAGE_PORTUGUESE_BRAZIL */
    NULL,           /* RETRO_LANGUAGE_PORTUGUESE_PORTUGAL */

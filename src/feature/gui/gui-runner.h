@@ -12,7 +12,7 @@ CXX_GUARD_START
 
 #include <mgba/core/config.h>
 #include "feature/gui/remap.h"
-#include <mgba/internal/gba/hardware.h>
+#include <mgba/gba/interface.h>
 #include <mgba-util/circle-buffer.h>
 #include <mgba-util/gui.h>
 #include <mgba-util/threading.h>
@@ -23,15 +23,18 @@ enum mGUIInput {
 	mGUI_INPUT_SCREEN_MODE,
 	mGUI_INPUT_SCREENSHOT,
 	mGUI_INPUT_FAST_FORWARD_HELD,
-	mGUI_INPUT_FAST_FORWARD_TOGGLE
+	mGUI_INPUT_FAST_FORWARD_TOGGLE,
+	mGUI_INPUT_MUTE_TOGGLE,
 };
 
 struct mGUIBackground {
 	struct GUIBackground d;
 	struct mGUIRunner* p;
 
-	color_t* screenshot;
-	int screenshotId;
+	color_t* image;
+	size_t imageSize;
+
+	unsigned screenshotId;
 };
 
 struct mCore;

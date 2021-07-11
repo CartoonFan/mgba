@@ -22,6 +22,8 @@
 #include "InputController.h"
 #include "LoadSaveState.h"
 #include "LogController.h"
+#include "SettingsView.h"
+
 struct mArguments;
 
 namespace QGBA {
@@ -32,6 +34,7 @@ class CoreController;
 class CoreManager;
 class DebuggerConsoleController;
 class Display;
+class DolphinConnector;
 class FrameView;
 class GDBController;
 class GIFView;
@@ -54,11 +57,14 @@ public:
 	std::shared_ptr<CoreController> controller() { return m_controller; }
 
 	void setConfig(ConfigController*);
+	ConfigController* config() { return m_config; }
+
 	void argumentsPassed(mArguments*);
 
 	void resizeFrame(const QSize& size);
 
 	void updateMultiplayerStatus(bool canOpenAnother) { m_multiWindow->setEnabled(canOpenAnother); }
+	void updateMultiplayerActive(bool active);
 
 signals:
 	void startDrawing();
@@ -68,6 +74,7 @@ signals:
 public slots:
 	void setController(CoreController* controller, const QString& fname);
 	void selectROM();
+	void bootBIOS();
 #ifdef USE_SQLITE3
 	void selectROMInArchive();
 	void addDirToLibrary();
@@ -76,6 +83,7 @@ public slots:
 	void selectState(bool load);
 	void selectPatch();
 	void scanCard();
+	void parseCard();
 	void enterFullScreen();
 	void exitFullScreen();
 	void toggleFullScreen();
@@ -93,16 +101,12 @@ public slots:
 	void exportSharkport();
 
 	void openSettingsWindow();
+	void openSettingsWindow(SettingsView::Page);
 
 	void startVideoLog();
 
 #ifdef USE_DEBUGGERS
 	void consoleOpen();
-#endif
-
-#ifdef USE_FFMPEG
-	void openVideoWindow();
-	void openGIFWindow();
 #endif
 
 #ifdef USE_GDB_STUB
@@ -131,6 +135,7 @@ private slots:
 
 	void reloadAudioDriver();
 	void reloadDisplayDriver();
+	void attachDisplay();
 	void changeRenderer();
 
 	void tryMakePortable();
@@ -141,6 +146,9 @@ private slots:
 	void focusCheck();
 
 	void updateFrame();
+	void updateMute();
+
+	void setLogo();
 
 private:
 	static const int FPS_TIMER_INTERVAL = 2000;
@@ -157,13 +165,15 @@ private:
 	void updateMRU();
 
 	void openView(QWidget* widget);
-	void attachDisplay();
 
 	template <typename T, typename... A> std::function<void()> openTView(A... arg);
 	template <typename T, typename... A> std::function<void()> openControllerTView(A... arg);
+	template <typename T, typename... A> std::function<void()> openNamedTView(std::unique_ptr<T>*, A... arg);
+	template <typename T, typename... A> std::function<void()> openNamedControllerTView(std::unique_ptr<T>*, A... arg);
 
 	Action* addGameAction(const QString& visibleName, const QString& name, Action::Function action, const QString& menu = {}, const QKeySequence& = {});
 	template<typename T, typename V> Action* addGameAction(const QString& visibleName, const QString& name, T* obj, V (T::*action)(), const QString& menu = {}, const QKeySequence& = {});
+	template<typename V> Action* addGameAction(const QString& visibleName, const QString& name, V (CoreController::*action)(), const QString& menu = {}, const QKeySequence& = {});
 	Action* addGameAction(const QString& visibleName, const QString& name, Action::BooleanFunction action, const QString& menu = {}, const QKeySequence& = {});
 
 	void updateTitle(float fps = -1);
@@ -218,13 +228,17 @@ private:
 
 	bool m_hitUnimplementedBiosCall;
 
+	bool m_inactiveMute = false;
+	bool m_multiActive = true;
+
 	std::unique_ptr<OverrideView> m_overrideView;
 	std::unique_ptr<SensorView> m_sensorView;
+	std::unique_ptr<DolphinConnector> m_dolphinView;
 	FrameView* m_frameView = nullptr;
 
 #ifdef USE_FFMPEG
-	VideoView* m_videoView = nullptr;
-	GIFView* m_gifView = nullptr;
+	std::unique_ptr<VideoView> m_videoView;
+	std::unique_ptr<GIFView> m_gifView;
 #endif
 
 #ifdef USE_GDB_STUB
