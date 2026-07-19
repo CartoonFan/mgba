@@ -137,9 +137,9 @@ void ForwarderView::validate() {
 			valid = false;
 		}
 	} else {
-		m_ui.baseFilename->setEnabled(true);
-		m_ui.baseLabel->setEnabled(true);
-		m_ui.baseBrowse->setEnabled(true);
+		m_ui.baseFilename->setEnabled(false);
+		m_ui.baseLabel->setEnabled(false);
+		m_ui.baseBrowse->setEnabled(false);
 	}
 	if (m_controller.inProgress()) {
 		valid = false;
