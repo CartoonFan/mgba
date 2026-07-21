@@ -33,6 +33,7 @@ bool AudioProcessorDummy::start() {
 	}
 
 	m_interval.start();
+	m_lastRefresh = 0;
 	m_timer.start();
 	return true;
 }
@@ -69,8 +70,9 @@ void AudioProcessorDummy::refresh() {
 		second *= mCoreCalculateFramerateRatio(thread->core, thread->impl->sync.fpsTarget);
 	}
 
-	qint64 elapsed = m_interval.nsecsElapsed();
-	m_interval.start();
+	qint64 totalElapsed = m_interval.nsecsElapsed();
+	qint64 elapsed = totalElapsed - m_lastRefresh;
+	m_lastRefresh = totalElapsed;
 
 	mCoreSyncLockAudio(&thread->impl->sync);
 	mAudioBufferRead(buffer, NULL, elapsed * sampleRate / second);

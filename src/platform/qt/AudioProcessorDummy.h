@@ -41,6 +41,7 @@ private:
 	unsigned m_sampleRate = 44100;
 	QElapsedTimer m_interval;
 	QTimer m_timer;
+	qint64 m_lastRefresh;
 };
 
 }
