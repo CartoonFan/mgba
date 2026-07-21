@@ -107,6 +107,7 @@ set(SOURCE_FILES
 	AssetTile.cpp
 	AssetView.cpp
 	AudioProcessor.cpp
+	AudioProcessorDummy.cpp
 	CheatsModel.cpp
 	CheatsView.cpp
 	CheckBoxDelegate.cpp

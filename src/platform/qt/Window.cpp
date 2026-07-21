@@ -25,6 +25,7 @@
 
 #include "AboutScreen.h"
 #include "AudioProcessor.h"
+#include "AudioProcessorDummy.h"
 #include "BattleChipView.h"
 #include "CheatsView.h"
 #include "ConfigController.h"
@@ -1156,6 +1157,9 @@ void Window::reloadAudioDriver() {
 	m_audioProcessor->configure(m_config);
 	if (!m_audioProcessor->start()) {
 		LOG(QT, WARN) << tr("Failed to start audio processor");
+		m_audioProcessor = std::make_unique<AudioProcessorDummy>();
+		m_audioProcessor->setInput(m_controller);
+		m_audioProcessor->configure(m_config);
 	}
 }
 

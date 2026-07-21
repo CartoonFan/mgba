@@ -6,6 +6,7 @@
 #include "AudioProcessor.h"
 #include "moc_AudioProcessor.cpp"
 
+#include "AudioProcessorDummy.h"
 #include "ConfigController.h"
 
 #ifdef BUILD_SDL
@@ -26,6 +27,8 @@ AudioProcessor::Driver AudioProcessor::s_driver = AudioProcessor::Driver::SDL;
 
 AudioProcessor* AudioProcessor::create() {
 	switch (s_driver) {
+	case Driver::DUMMY:
+		return new AudioProcessorDummy();
 #ifdef BUILD_SDL
 	case Driver::SDL:
 		return new AudioProcessorSDL();
